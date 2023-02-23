@@ -5,6 +5,7 @@ class BinaryHeap:
     def __init__(self):
         self.current_size = 0
         self.heap_list = [0]
+        self.heap_list[0] = None
 
     @staticmethod
     def parent(x):
@@ -68,24 +69,33 @@ class BinaryHeap:
         self.sift_down(1)
         return min_value
 
+    def __iter__(self):
+        return iter(self.heap_list)
+
     def __contains__(self, item):
         return item in self.heap_list
 
     def __str__(self):
         return str(self.heap_list)
 
-if __name__ == '__main__':
-    heap = BinaryHeap()
-    heap.insert(10)
-    heap.insert(20)
-    heap.insert(30)
-    heap.insert(40)
-    heap.insert(9)
-    heap.insert(8)
-    heap.insert(7)
-    heap.insert(62)
-    heap.insert(1)
-    heap.insert(2)
+class Test:
+    def __init__(self, x):
+        self.x = x
+        self.unique_id = id(self)
 
-    while not heap.is_empty():
-        print(heap.pop())
+    def __lt__(self, node_to_compare):
+        return self.x < node_to_compare.x
+
+    def __gt__(self, node_to_compare):
+        return self.x > node_to_compare.x
+
+
+if __name__ == '__main__':
+    test = Test(1)
+    test2 = Test(1)
+
+    heap = BinaryHeap()
+    heap.insert(test)
+    heap.insert(test2)
+
+    print(heap)

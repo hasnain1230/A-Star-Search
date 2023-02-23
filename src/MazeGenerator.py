@@ -8,12 +8,17 @@ import pygame
 class Maze:
     FRAME_RATE = 10000
 
-    def __init__(self, width, height, cell_size, rows, cols):
+    def __init__(self, width, height, cell_size, rows, cols, show_window=True):
         self.width = width  # Width of the screen
         self.height = height  # Height of the screen
         self.cell_size = cell_size  # Size of each cell
         self.cols, self.rows = rows, cols  # Number of rows and columns (rows * cols = total cells)
-        self.screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+
+        if show_window:
+            self.screen = pygame.display.set_mode((self.width, self.height))
+        else:
+            self.screen = pygame.Surface((self.width, self.height), pygame.HIDDEN)
+
         self.clock = pygame.time.Clock()
         self.screen.fill((169, 169, 169))  # gray
 
