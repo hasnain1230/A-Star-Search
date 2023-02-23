@@ -1,3 +1,4 @@
+# Homework 1 - A* Searching in Maze
 This assignment demonstrates variations of the A* searching algorithm. Please refer to the source code for how these algorithms were implemented. It should be contained within this archive in the `src` directory.
 
 # Author
@@ -77,6 +78,9 @@ We can calculate the percentage difference between the total times, and average 
 
 Setting $$A = 2.4213880586624144$$ $$and$$ $$B = 2.3723199701309206$$
 into the formula, we get: $$Percentage\:Difference=\left(\frac{\left|\left(2.4213880586624144\right)-\left(2.3723199701309206\right)\right|}{\frac{\left(\left(2.4213880586624144\right)+\left(2.3723199701309206\right)\right)}{2}}\right)\cdot \:100=2.04727\:\%$$
+Doing the same thing for total time difference, we get:
+$$Percentage\:Difference=\left(\frac{\left|\left(121.06940293312073\right)-\left(118.61599850654602\right)\right|}{\frac{\left(\left(121.06940293312073\right)+\left(118.61599850654602\right)\right)}{2}}\right)\cdot \:100=2.04727\:\%$$
+
 Thus, as we can see, when we break equal $f$ values ties using higher $g$ values is better as it yields about a $2$ % benefit in the mazes we generated. 
 
 The reason tie breaking $f$ values with higher $g$ values is better is because a higher $g$ value ensures we are closer to the goal node as that indicates we are further away from the starting node. Since our $StartingState$ and $EndingState$ are on opposite sides of the maze, when the $GoalState$ is founded, the $g$ value will be at the farthest possible point point on the grid, and thus, the $g$ value being bigger ensures we are getting closer to the $GoalState$. The further we are from the $StartingState$ the closer we are getting to a solution, hence the higher $g$ value is better. Additionally, higher $g$ values ensure a more consistent $f$ value since our $GoalState$ must be as far as possible from $StartingState$.
@@ -94,11 +98,89 @@ Please Note:
 
 To see the source code for how these tests were written, please the `main()`  function in in `src/A-Star.py` to see the implementation of forward A* and reverse A*, how the runtime was calculated, and all other implementation details. To be condense, we will no longer state our $g$ value tie breaking method, please assume this going forward for this part only.
 
-Forward A* search 
+Forward A* search with the previously mentioned tie breaking method took a total of $123.02186870574951$ seconds to find the paths in all mazes. The average time it took to find a path per maze was $2.4604373741149903$ seconds.
 
+Reverse A* search with the previously mentioned tie breaking method took a total of $293.88777685165405$ seconds find the paths in all mazes. The average time it took to find a path per maze was $5.877755537033081$ seconds. 
 
+The reason Reverse A* search was so much slower than Forward A* is because the branching factor when going in reverse is much larger than the branching factor when going forward. There are more nodes and paths to explore when going backwards, hence why it took longer. Because of this large branching factors and may ways to get to one location (there are many ways to get from the $StartingState$ to the $GoalState$), so when we are going backwards, the branching factor is much more significant. This means that more nodes have to be expanded before we find a path which simply takes much longer as compared to forward A* search where based on the heuristic and number of short paths to get to the $GoalState$, in these mazes in our case, Forward A* search was much faster. 
 
+(Also, I was monitoring my CPU temperatures during this test. The CPU was running at it's rated speed for all A-Star path searching algorithms. That was not a limiting factor here. The CPU did not exceed 80**°** C.)
 
+Using this formula: $$Percentage\:Difference=\left(\frac{\left|A-B\right|}{\frac{\left(A+B\right)}{2}}\right)\cdot 100$$
+We can calculate the percentage difference between forward A* search and reverse A* search.
 
+We can calculate the percentage difference between the average times.
 
+Setting $$A = 5.877755537033081$$ $$and$$ $$B = 2.4604373741149903$$
+into the formula, we get: $$Percentage\:Difference=\left(\frac{\left|\left(5.877755537033081\right)-\left(2.4604373741149903\right)\right|}{\frac{\left(\left(5.877755537033081\right)+\left(2.4604373741149903\right)\right)}{2}}\right)\cdot \:100=81.9678\:\%$$
+(Total percentage difference would have the same percentage value as the average percentage distance.)
 
+Based on these results, we can confidently that forward A* search is much more efficient and optimal compared to reverse A* search, based on the runtime alone as $81.9$ % is a significant increase in performance. Please see the explanation above for why this occurred in the differences between the two search algorithms.
+
+## Part 4
+Please see `src/A-Star.py` to see the for the implementation details of forward A*, reverse A*, and adaptive A* searching algorithms.
+
+To prove that Manhattan Distances are consistent in grid worlds, we need to prove the following: $$\forall x \in (n, a, n'):h\left(n\right)\le c\left(n,\:a,\:n'\right)+h\left(n'\right)$$
+Where $c\left(n,\:a,\:n'\right)$ is the step cost for going from $n$ to $n'$ using action $a$
+
+By definition, we have for Manhattan Distances:
+$$Manhattan\:Distance\:=\:\left|x_1-x_2\right|+\left|y_1-y_2\right|$$
+Where $x_1$ and $y_1$ are the first coordinate pairs and $x_2$ and $y_2$ are the second coordinate pairs. Suppose we have three points, $A,\:B,\:and\:C$  where $A$ and $B$ are a are adjacent to each other and $C$ is adjacent to $B$. The cost of moving from $A$ to $B$ is $1$ and the cost of moving from $B$ to $C$ is $1$. 
+
+Now we can prove that the Manhattan Distance from A to B is 1, and so is the Manhattan distance from B to C, so the following is true:
+$$\left|Manhattan\:Distance\left(A,B\right)-Manhattan\:Distance\:\left(B,C\right)\right|\le ActionCost\left(A,B\right)$$
+This means that:
+$$\left|\left(\left|Ax-Bx\right|+\left|Ay-By\right|-\left(\left|Cx-Bx\right|+\left|Cy-By\right|\right)\right)\right|\le 1$$
+Which means that:
+$$\left|\left(Ax-Cx\right)+\left(Ay-Cy\right)\right|\le 1$$
+This is true because the distance from A to C must also be 1, so we satisfy the definition of a consistent heuristic as we defined earlier. The heuristic will always be larger than 1, in any case, as long as their exists a gird world. This means that the Manhattan Distance is always consistent as defined by a consistent heuristic. **Thus, this has been proved.**
+
+Furthermore, by definition, Adaptive A* search will initially has a consistent heuristic because of the way the heuristic is calculated and because of the definition of Adaptive A* search. The heuristic used is: 
+$$h(s):=g(s_{goal}) - g(s)$$This will initially under estimate the heuristic or be equal to the step cost plus the next heuristic function as stated in the prior definition of a consistent heuristic: $$\forall x \in (n, a, n'):h\left(n\right)\le c\left(n,\:a,\:n'\right)+h\left(n'\right)$$
+This is because the cost to get to the goal minus the current cost will always be less than the cost of getting the next node, plus the next heuristic cost. The given heuristic will initially under estimate because the cost for action plus the next heuristic will always be greater than the current heuristic which is calculated by using the goal cost. Because of this property, adaptive A* will initially be consistent, even if the step cost increases.
+
+**Hence, proved.**
+
+## Part 5
+Please see `src/A-Star.py` to see the for the implementation details of forward A*, reverse A*, and adaptive A* searching algorithms.
+
+This problem states that one may use either run time, or the number of expanded cells. I have decided to use the run time in my analysis.
+
+To see the results of my run time when tie-breaking $g$ values larger, and $g$ values bigger, please see `mazes/Forward_A_Star_Solutions/forward_a_star_times.txt` for when we were tie breaking based on the larger $g$ value, and using forward A* search. To see results of adaptive A* search, still using larger $g$ value tie breaking, please see, `mazes/Adaptive_A_Star_Solutions/adaptive_a_star_times.txt`.
+
+Please Note:
+- Both forward A* and reverse A* variations were done with tie breaking of bigger $g$ values on the **EXACT SAME MAZES**
+- Also, the timings we got do not include drawing the maze, it only calculates the time it took to find a part from `start_node` to `goal_node`. It does not count the time it took to draw the maze and path, and save the image.
+
+To see the source code for how these tests were written, please the `main()`  function in in `src/A-Star.py` to see the implementation of forward A* and reverse A*, how the runtime was calculated, and all other implementation details. To be condense, we will no longer state our $g$ value tie breaking method, please assume this going forward for this part only.
+
+Forward A* search with the previously mentioned tie breaking method took a total of $123.02186870574951$ seconds to find the paths in all mazes. The average time it took to find a path per maze was $2.4604373741149903$ seconds.
+
+Adaptive A* search with the previously mentioned tie breaking method took a total of $242.34785318374634$ seconds with an average of $4.846957063674926$ seconds. 
+
+The reason Adaptive A* search took so long was because it first had to find a path, and therefore calculate the $g$ value of the goal node. This meant first doing forward A* search normally to get the $g$ values and the best path, and then updating the heuristics of every cell in the closed with the new heuristic value. Then we do adaptive A* search with the new heuristics. Normally, we would store the updated heuristic values for all the nodes in the updated list, so when we call adaptive A* search over and over, we do not need to do forward A* search every time. Doing this extra forward A* search to get the closed list is what slowed the algorithm down. Normally, this would not be the case. The purpose of this algorithm is to decrease the branching factor so that we find the $GoalState$ much faster. Normally, we would store the new heuristic values for the nodes in the closed list so we can get right into the search, but in this case, we are not storing the values, so getting the closed list for adaptive A* search is what caused this major decrease in performance, although this is not reflective of a real world performance for the new heuristic values are already known, or are easily calculated. This implementation first had to find the distance to the $GoalState$ by doing forward A* first, and then doing the adaptive A* search which increased the overall runtime of the algorithm. 
+
+Nonetheless, we can calculate the percent difference of forward A* search and adaptive A* search to see how much faster forward A* search was. 
+
+Using this formula: $$Percentage\:Difference=\left(\frac{\left|A-B\right|}{\frac{\left(A+B\right)}{2}}\right)\cdot 100$$
+We can calculate the percentage difference between forward A* search and reverse A* search.
+
+We can calculate the percentage difference between the average times.
+
+Setting $$A = 4.846957063674926$$ $$and$$ $$B = 2.4604373741149903$$
+into the formula, we get: $$Percentage\:Difference=\left(\frac{\left|\left(4.846957063674926\right)-\left(2.4604373741149903\right)\right|}{\frac{\left(\left(4.846957063674926\right)+\left(2.4604373741149903\right)\right)}{2}}\right)\cdot \:100=65.318\:\%$$
+(Total percentage difference would have the same percentage value as the average percentage distance.)
+
+Based on these results, we can confidently that forward A* search is much more efficient and optimal compared to adaptive A* search in the case when we need to first calculate the path to the goal state and then update the heuristic as we did here. If that was not the case, this would have been much faster and comparable against forward A* search. Here, we had to first find the closed list so we could update the heuristics for that closed list because we could run A* search again. This significantly reduced our run time. So, while forward A* search was much faster than adaptive A* search, that is not the entire story as in adaptive A* search, we had to run forward A* search again to get the closed list, to get the $g$ values of the final state to then calculate the heuristic again to do forward A* search more optimally. These steps are significantly more, hence the longer runtime of adaptive A* search. 
+
+## Part 6
+A statistical hypothesis test for forward A* search and reverse A* can be done to understand if there is bias in the experimental method, or if the change in performance we saw is simply insignificant and a result of nature (random, with no meaning). We can do this by doing the following:
+- First, we need to define the null hypothesis $H_0$ and an alternative hypothesis $H_1$. In this case, $H_0$ may indicate there is no significant difference between forward and backward A* search while $H_1$ would indicate that there is a significant performance difference between the two. 
+- Then, we would do a t-test: $$t = \frac{\overline{x}_1 - \overline{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
+	- Where is $s$ is the standard deviation, $n$ is the sample size, and $\overline{x}_1, \overline{x}_2$ are the means average run time of reverse A* for $\overline{x}_1$ and forward A* average runtime for $\overline{x}_2$. 
+	- This t-test would allow for a proper statistic for us to use.
+- Then, we can find a $p$ value to determine whether or not or not there is a significant difference between forward A* search and reverse A* search. The generally accepted rule is if the $p$ value yields a value higher than 5%, then were is something beyond random natural events that is causing a difference between the two values. In other words, there is a significant difference between the two values (in this case, the average run time of forward A* search and reverse A* search). If that is not the case and the $p$ value is less than $5$%, then 
+- We can calculate the $p$ value using this formula to get $z$:
+  $$z = \frac{\bar{X_1} - \bar{X_2} - (\mu_1 - \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}$$
+- And then using this formula to get the $p$ value: $$p = (1 - z) * 100$$
+- Thus, we can find the $p$ value and do a statistical hypothesis test this way.
